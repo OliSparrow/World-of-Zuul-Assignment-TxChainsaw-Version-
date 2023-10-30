@@ -34,7 +34,7 @@ public class Game
      */
     private void createRooms()
     {
-        Room cellOne, cellTwo, basementHallway, lair, boneRoom, toolStorage, coldRoom, lairDoor;
+        Room cellOne, cellTwo, basementHallway, lair, boneRoom, toolStorage, coldRoom, lairDoor, centralHallway, centralStaircase, livingRoom, backPorch, bloodRoom, kitchen, diningRoom;
       
         // create the rooms
         cellOne = new Room("a small dimly lit cell.");
@@ -45,18 +45,40 @@ public class Game
         toolStorage = new Room("in something that looks like a tool storage. You spot a blue toolbox on a table.");
         coldRoom = new Room("in a cold room, like a freezer. Bodies are strung up from the ceiling, animal and human.");
         lairDoor = new Room("in front of a large blue door with a light shining on it. You try to open it, but it won't budge. You're going to need to find a way to pick the lock.");
+        centralStaircase = new Room("in a narrow staircase. The red wall is lined with varying animal skulls.");
+        centralHallway = new Room("in a hallway with a locked door at the end of it. On either side, there are doors leading to other rooms of the house.");
+        livingRoom = new Room("in what seems like a living room, except there's chicken feathers everywhere and the furniture is adorned with human spines and skulls. At the end of a room is a large window, the sun high in the sky outside.");
+        backPorch = new Room("a room resembling a back porch, with large windows letting in a lot of natural light. It would almost be serene, if not for the horrible smell of rot and decay.");
+        bloodRoom = new Room("a dark room with buckets of what appears to be blood laying around on the floor. A large butcher table sits in the midst, but luckily nothing is on it. For now.");
+        kitchen = new Room("a room that almost looks like a normal kitchen. A large freezer sits across from the fridge and other appliances.");
+        diningRoom = new Room("in a long room with a big dining table. At the end of it, what looks like the corpse of a very old man sits with closed eyes, holding what seems to be a hammer. Wait, did it just move?");
 
         // initialise room exits
-        cellOne.setExits(null, null, null, basementHallway);
-        basementHallway.setExits(lair, cellOne, null, cellTwo);
-        cellTwo.setExits(null, basementHallway, null, null);
-        lair.setExits(lairDoor, boneRoom, basementHallway, coldRoom);
-        boneRoom.setExits(toolStorage, null, null, lair);
-        toolStorage.setExits(null, boneRoom, null, coldRoom);
-        coldRoom.setExits(toolStorage, lair, null, null);
-        lairDoor.setExits(null, null, lair, null);
+        cellOne.setExit("hallway", basementHallway);
 
-        currentRoom = cellOne;  // start game outside
+        basementHallway.setExit("cell one", cellOne);
+        basementHallway.setExit("cell two", cellTwo);
+        basementHallway.setExit("lair", lair);
+
+        cellTwo.setExit("hallway", basementHallway);
+
+        lair.setExit("door", lairDoor);
+        lair.setExit("bone room", boneRoom);
+        lair.setExit("cold room", coldRoom);
+        lair.setExit("hallway", basementHallway);
+
+        boneRoom.setExit("storage", toolStorage);
+        boneRoom.setExit("lair", lair);
+
+        toolStorage.setExit("bone room", boneRoom);
+        toolStorage.setExit("cold room", coldRoom);
+
+        coldRoom.setExit("lair", lair);
+        coldRoom.setExit("storage", toolStorage);
+
+        lairDoor.setExit("lair", lair);
+
+        currentRoom = cellOne;  // start game in cell 1
     }
 
     /**

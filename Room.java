@@ -36,25 +36,16 @@ public class Room
      * to another room or is null (no exit there).
      */
 
-    public void setExits(Room north, Room east, Room south, Room west)
+    public void setExit(String direction, Room neighbour)
     {
-        if(north != null)
-            exits.put("north", north);
-        if(east != null)
-            exits.put("east", east);
-        if(south != null)
-            exits.put("south", south);
-        if(west != null)
-            exits.put("west", west);;
+        exits.put(direction, neighbour);
     }
 
     public Room getExit(String direction) {
         return exits.get(direction);
     }
 
-    /**
-     * @return The description of the room.
-     */
+
     public String getDescription()
     {
         return description;
@@ -64,12 +55,6 @@ public class Room
         this.description = description;
     }
 
-    /**
-     * Return a description of the room’s exits,
-     * for example, "Exits: north west".
-     *
-     * @return A description of the available exits.
-     */
     public HashMap<String, Room> getExitString() {
         return exits;
     }
