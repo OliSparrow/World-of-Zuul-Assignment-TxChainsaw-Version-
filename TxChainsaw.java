@@ -2,12 +2,12 @@
  *
  * @author smsj
  */
-public class Zuul
+public class TxChainsaw
 {
     public static void main(String[] args)
     {
         Game game = new Game();
-        game.play();
+        game.startGame();
     }
     
     

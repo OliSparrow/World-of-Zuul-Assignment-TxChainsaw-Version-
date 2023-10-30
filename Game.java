@@ -56,7 +56,7 @@ public class Game
     /**
      *  Main play routine.  Loops until end of play.
      */
-    public void play() 
+    public void startGame()
     {            
         printWelcome();
 
@@ -83,6 +83,7 @@ public class Game
         System.out.println();
         System.out.println("You are " + currentRoom.getDescription());
         System.out.print("Exits: ");
+
         if(currentRoom.northExit != null) {
             System.out.print("north ");
         }
