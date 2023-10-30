@@ -34,25 +34,27 @@ public class Game
      */
     private void createRooms()
     {
-        Room cellOne, cellTwo, basementHallway, lair, boneRoom, toolStorage, coldRoom;
+        Room cellOne, cellTwo, basementHallway, lair, boneRoom, toolStorage, coldRoom, lairDoor;
       
         // create the rooms
         cellOne = new Room("a small dimly lit cell.");
         cellTwo = new Room("a small dimly lit cell, similar to the one you woke up in. There seems to be nothing here.");
         basementHallway = new Room("in a long narrow hallway.");
-        lair = new Room("in a large room with ominous red lighting. Bodies are strung from gallows, one looking fresher than the others. ");
+        lair = new Room("in a large room with ominous red lighting. Bodies are strung from gallows, one looking fresher than the others. To the north of the room, you see a large blue door.");
         boneRoom = new Room("in a medium sized room with bones hanging from the ceiling. You can see piles of bones laying around the edges of the room. You hope they aren't human.");
         toolStorage = new Room("in something that looks like a tool storage. You spot a blue toolbox on a table.");
         coldRoom = new Room("in a cold room, like a freezer. Bodies are strung up from the ceiling, animal and human.");
+        lairDoor = new Room("in front of a large blue door with a light shining on it. You try to open it, but it won't budge. You're going to need to find a way to pick the lock.");
 
         // initialise room exits
         cellOne.setExits(null, null, null, basementHallway);
         basementHallway.setExits(lair, cellOne, null, cellTwo);
         cellTwo.setExits(null, basementHallway, null, null);
-        lair.setExits(null, boneRoom, basementHallway, coldRoom);
+        lair.setExits(lairDoor, boneRoom, basementHallway, coldRoom);
         boneRoom.setExits(toolStorage, null, null, lair);
         toolStorage.setExits(null, boneRoom, null, coldRoom);
         coldRoom.setExits(toolStorage, lair, null, null);
+        lairDoor.setExits(null, null, lair, null);
 
         currentRoom = cellOne;  // start game outside
     }
@@ -88,22 +90,7 @@ public class Game
         System.out.println();
         System.out.println("Type 'help' if you need help.");
         System.out.println();
-        System.out.println("You are " + currentRoom.getDescription());
-        System.out.print("Exits: ");
-
-        if(currentRoom.northExit != null) {
-            System.out.print("north ");
-        }
-        if(currentRoom.eastExit != null) {
-            System.out.print("east ");
-        }
-        if(currentRoom.southExit != null) {
-            System.out.print("south ");
-        }
-        if(currentRoom.westExit != null) {
-            System.out.print("west ");
-        }
-        System.out.println();
+        printLocationInfo();
     }
 
     /**
@@ -165,41 +152,21 @@ public class Game
         String direction = command.getSecondWord();
 
         // Try to leave current room.
-        Room nextRoom = null;
-        if(direction.equals("north")) {
-            nextRoom = currentRoom.northExit;
-        }
-        if(direction.equals("east")) {
-            nextRoom = currentRoom.eastExit;
-        }
-        if(direction.equals("south")) {
-            nextRoom = currentRoom.southExit;
-        }
-        if(direction.equals("west")) {
-            nextRoom = currentRoom.westExit;
-        }
+        Room nextRoom = currentRoom.getExit(direction);
 
         if (nextRoom == null) {
             System.out.println("There is no door!");
         }
         else {
             currentRoom = nextRoom;
-            System.out.println("You are " + currentRoom.getDescription());
-            System.out.print("Exits: ");
-            if(currentRoom.northExit != null) {
-                System.out.print("north ");
-            }
-            if(currentRoom.eastExit != null) {
-                System.out.print("east ");
-            }
-            if(currentRoom.southExit != null) {
-                System.out.print("south ");
-            }
-            if(currentRoom.westExit != null) {
-                System.out.print("west ");
-            }
-            System.out.println();
+            printLocationInfo();
         }
+    }
+
+    private void printLocationInfo() {
+        System.out.println("You are " + currentRoom.getDescription());
+        System.out.print("Exits: " + currentRoom.getExitString());
+        System.out.println();
     }
 
     /** 
