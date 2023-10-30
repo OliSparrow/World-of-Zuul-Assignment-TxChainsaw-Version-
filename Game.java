@@ -34,23 +34,27 @@ public class Game
      */
     private void createRooms()
     {
-        Room outside, theater, pub, lab, office;
+        Room cellOne, cellTwo, basementHallway, lair, boneRoom, toolStorage, coldRoom;
       
         // create the rooms
-        outside = new Room("outside the main entrance of the university");
-        theater = new Room("in a lecture theater");
-        pub = new Room("in the campus pub");
-        lab = new Room("in a computing lab");
-        office = new Room("in the computing admin office");
-        
-        // initialise room exits
-        outside.setExits(null, theater, lab, pub);
-        theater.setExits(null, null, null, outside);
-        pub.setExits(null, outside, null, null);
-        lab.setExits(outside, office, null, null);
-        office.setExits(null, null, null, lab);
+        cellOne = new Room("a small dimly lit cell.");
+        cellTwo = new Room("a small dimly lit cell, similar to the one you woke up in. There seems to be nothing here.");
+        basementHallway = new Room("in a long narrow hallway.");
+        lair = new Room("in a large room with ominous red lighting. Bodies are strung from gallows, one looking fresher than the others. ");
+        boneRoom = new Room("in a medium sized room with bones hanging from the ceiling. You can see piles of bones laying around the edges of the room. You hope they aren't human.");
+        toolStorage = new Room("in something that looks like a tool storage. You spot a blue toolbox on a table.");
+        coldRoom = new Room("in a cold room, like a freezer. Bodies are strung up from the ceiling, animal and human.");
 
-        currentRoom = outside;  // start game outside
+        // initialise room exits
+        cellOne.setExits(null, null, null, basementHallway);
+        basementHallway.setExits(lair, cellOne, null, cellTwo);
+        cellTwo.setExits(null, basementHallway, null, null);
+        lair.setExits(null, boneRoom, basementHallway, coldRoom);
+        boneRoom.setExits(toolStorage, null, null, lair);
+        toolStorage.setExits(null, boneRoom, null, coldRoom);
+        coldRoom.setExits(toolStorage, lair, null, null);
+
+        currentRoom = cellOne;  // start game outside
     }
 
     /**
@@ -77,8 +81,11 @@ public class Game
     private void printWelcome()
     {
         System.out.println();
-        System.out.println("Welcome to the World of Zuul!");
-        System.out.println("World of Zuul is a new, incredibly boring adventure game.");
+        System.out.println("You wake up in a small, poorly lit room. You are alone.");
+        System.out.println("In the distance, you hear the sounds of a chainsaw revving");
+        System.out.println("coupled with the screams of an unknown person.");
+        System.out.println("You don't know where you are. All you know is you need to escape.");
+        System.out.println();
         System.out.println("Type 'help' if you need help.");
         System.out.println();
         System.out.println("You are " + currentRoom.getDescription());
@@ -137,10 +144,10 @@ public class Game
     private void printHelp() 
     {
         System.out.println("You are lost. You are alone. You wander");
-        System.out.println("around at the university.");
+        System.out.println("around the dark and grim basement.");
         System.out.println();
         System.out.println("Your command words are:");
-        System.out.println("   go quit help");
+        System.out.println("   go quit look help");
     }
 
     /** 
