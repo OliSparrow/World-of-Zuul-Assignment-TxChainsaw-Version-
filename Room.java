@@ -26,7 +26,7 @@ public class Room
      * "an open court yard".
      * @param description The room's description.
      */
-    public Room(String description) 
+    public Room(String description)
     {
         this.setDescription(description);
         exits = new HashMap<>();
@@ -49,6 +49,7 @@ public class Room
 
     public String getDescription()
     {
+
         return description;
     }
 

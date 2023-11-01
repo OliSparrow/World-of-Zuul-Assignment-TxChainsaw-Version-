@@ -19,6 +19,7 @@ public class Game
 {
     private Parser parser;
     private Room currentRoom;
+    private Item currentInventory;
         
     /**
      * Create the game and initialise its internal map.
@@ -37,21 +38,21 @@ public class Game
         Room cellOne, cellTwo, basementHallway, lair, boneRoom, toolStorage, coldRoom, lairDoor, centralHallway, centralStaircase, livingRoom, backPorch, bloodRoom, kitchen, diningRoom;
       
         // create the rooms
-        cellOne = new Room("a small dimly lit cell.");
-        cellTwo = new Room("a small dimly lit cell, similar to the one you woke up in. There seems to be nothing here.");
-        basementHallway = new Room("in a long narrow hallway.");
-        lair = new Room("in a large room with ominous red lighting. Bodies are strung from gallows, one looking fresher than the others. To the north of the room, you see a large blue door.");
-        boneRoom = new Room("in a medium sized room with bones hanging from the ceiling. You can see piles of bones laying around the edges of the room. You hope they aren't human.");
-        toolStorage = new Room("in something that looks like a tool storage. You spot a blue toolbox on a table.");
-        coldRoom = new Room("in a cold room, like a freezer. Bodies are strung up from the ceiling, animal and human.");
-        lairDoor = new Room("in front of a large blue door with a light shining on it. You try to open it, but it won't budge. You're going to need to find a way to pick the lock.");
-        centralStaircase = new Room("in a narrow staircase. The red wall is lined with varying animal skulls.");
-        centralHallway = new Room("in a hallway with a locked door at the end of it. On either side, there are doors leading to other rooms of the house.");
-        livingRoom = new Room("in what seems like a living room, except there's chicken feathers everywhere and the furniture is adorned with human spines and skulls. At the end of a room is a large window, the sun high in the sky outside.");
-        backPorch = new Room("a room resembling a back porch, with large windows letting in a lot of natural light. It would almost be serene, if not for the horrible smell of rot and decay.");
-        bloodRoom = new Room("a dark room with buckets of what appears to be blood laying around on the floor. A large butcher table sits in the midst, but luckily nothing is on it. For now.");
-        kitchen = new Room("a room that almost looks like a normal kitchen. A large freezer sits across from the fridge and other appliances.");
-        diningRoom = new Room("in a long room with a big dining table. At the end of it, what looks like the corpse of a very old man sits with closed eyes, holding what seems to be a hammer. Wait, did it just move?");
+        cellOne = new Room("a small dimly lit cell");
+        cellTwo = new Room("a small dimly lit cell, similar to the one you woke up in. There seems to be nothing here");
+        basementHallway = new Room("in a long narrow hallway");
+        lair = new Room("in a large room with ominous red lighting. Bodies are strung from gallows, one looking fresher than the others. To the north of the room, you see a large blue door");
+        boneRoom = new Room("in a medium sized room with bones hanging from the ceiling. You can see piles of bones laying around the edges of the room. You hope they aren't human");
+        toolStorage = new Room("in something that looks like a tool storage. You spot a blue toolbox on a table");
+        coldRoom = new Room("in a cold room, like a freezer. Bodies are strung up from the ceiling, animal and human");
+        lairDoor = new Room("in front of a large blue door with a light shining on it. You try to open it, but it won't budge. You're going to need to find a way to pick the lock");
+        centralStaircase = new Room("in a narrow staircase. The red wall is lined with varying animal skulls");
+        centralHallway = new Room("in a hallway with a locked door at the end of it. On either side, there are doors leading to other rooms of the house");
+        livingRoom = new Room("in what seems like a living room, except there's chicken feathers everywhere and the furniture is adorned with human spines and skulls. At the end of a room is a large window, the sun high in the sky outside");
+        backPorch = new Room("a room resembling a back porch, with large windows letting in a lot of natural light. It would almost be serene, if not for the horrible smell of rot and decay");
+        bloodRoom = new Room("a dark room with buckets of what appears to be blood laying around on the floor. A large butcher table sits in the midst, but luckily nothing is on it. For now");
+        kitchen = new Room("a room that almost looks like a normal kitchen. A large freezer sits across from the fridge and other appliances");
+        diningRoom = new Room("in a long room with a big dining table. At the end of it, what looks like the corpse of a very old man sits with closed eyes, holding what seems to be a hammer");
 
         // initialise room exits
         cellOne.setExit("hallway", basementHallway);
@@ -79,6 +80,16 @@ public class Game
         lairDoor.setExit("lair", lair);
 
         currentRoom = cellOne;  // start game in cell 1
+    }
+
+    private void createItems() {
+        Item lockpick, boneScrap;
+        lockpick = new Item("A small lockpick. Can be used to open doors");
+        boneScrap = new Item("A small but sharp piece of chicken bone");
+
+        currentInventory = null; //start with nothing in inventory
+
+        //implement feature to actually obtain the items
     }
 
     /**
@@ -136,6 +147,16 @@ public class Game
         else if (commandWord.equals("go")) {
             goRoom(command);
         }
+        else if(commandWord.equals("look")) {
+            look();
+        } else if (commandWord.equals("get")) {
+            getItem();
+        }
+        else if (commandWord.equals("use")) {
+            useItem();
+        } else if (commandWord.equals("inventory")) {
+            printInventory();
+        }
         else if (commandWord.equals("quit")) {
             wantToQuit = quit(command);
         }
@@ -156,7 +177,18 @@ public class Game
         System.out.println("around the dark and grim basement.");
         System.out.println();
         System.out.println("Your command words are:");
-        System.out.println("   go quit help");
+        parser.showCommands();
+
+    }
+
+    private void printInventory() {
+        System.out.println("You check your pockets.");
+        System.out.println();
+        System.out.println("Your current inventory:");
+
+        if (currentInventory == null) {
+            System.out.println("There's nothing in your pockets!");
+        }
     }
 
     /** 
@@ -189,6 +221,19 @@ public class Game
         System.out.println("You are " + currentRoom.getDescription());
         System.out.print(currentRoom.getExitString());
         System.out.println();
+    }
+
+    //Re-prints the room description.
+    private void look(){
+        System.out.println(currentRoom.getLongDescription());
+    }
+
+    private void getItem(){
+        System.out.println("There is nothing to get!");
+    }
+
+    private void useItem(){
+        System.out.println("There is nothing to use!");
     }
 
     /** 

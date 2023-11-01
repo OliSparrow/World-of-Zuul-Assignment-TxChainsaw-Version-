@@ -1,5 +1,6 @@
 import java.util.Scanner;
 
+
 /**
  * This class is part of the "World of Zuul" application. 
  * "World of Zuul" is a very simple, text based adventure game.  
@@ -61,5 +62,10 @@ public class Parser
         else {
             return new Command(null, word2); 
         }
+    }
+
+    public void showCommands(){
+        String commandList = commands.getCommandList();
+        System.out.println(commandList);
     }
 }
