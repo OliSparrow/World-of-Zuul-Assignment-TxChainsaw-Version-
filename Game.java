@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Game 
+public class Game
 {
     private Parser parser;
     private Room currentRoom;
@@ -73,8 +73,15 @@ public class Game
 
         currentRoom = cellOne;  // start game in cell 1
 
-        blueBox.addItem("A small lockpick. Can be used to open doors.");
+        //Add items below
+        cellOne.addItem("lockpick", "A small but sturdy lockpick. Can be used on doors.");
+        blueBox.addItem("lockpick", "A small but sturdy lockpick. Can be used on doors.");
+
+        //Add doors below
+        lairDoor.addDoor();
     }
+
+
 
 
     /**
@@ -135,10 +142,10 @@ public class Game
         else if(commandWord.equals("look")) {
             look();
         } else if (commandWord.equals("get")) {
-            getItem();
+            takeItem(command);
         }
         else if (commandWord.equals("use")) {
-            useItem();
+            useItem(command);
         } else if (commandWord.equals("inventory")) {
             printInventory();
         }
@@ -223,43 +230,70 @@ public class Game
         System.out.println(currentRoom.getLongDescription());
     }
 
-    private void getItem(){
-        Item item = currentRoom.removeItem();
+    private void takeItem(Command command){
+        if (!command.hasSecondWord()) {
+            System.out.println("Get what?");
+            return;
+        }
+
+        String itemName = command.getSecondWord();
+        Item item = currentRoom.getItem(itemName);
 
         if (item != null) {
             inventory.add(item);
-            System.out.println("You picked up: " + item.getItemDescription());
+            item.pickedUp();
+            currentRoom.removeItem(item);
+            System.out.println("You picked up: " + itemName + "!");
         }
         else {
-            System.out.println("There is nothing to get!");
+            System.out.println("There is no " + itemName + " to get!");
         }
     }
 
-    private void useItem(){
-       if (!inventory.isEmpty()) {
-           Item currentItem = inventory.get(inventory.size() - 1); // Get the last item in inventory
-           String itemDescription = currentItem.getItemDescription();
+    private void useItem(Command command) {
+        if (command.hasSecondWord()) {
+            String itemToUse = command.getSecondWord();
+            boolean foundItem = false;
 
-           if (itemDescription.contains("lockpick")) {
-               Room lairDoorRoom = currentRoom.getRoom("lairDoor");
-               if (lairDoorRoom != null && !lockpickUsed) {
-                   lockpickUsed = true;
-                   System.out.println("You use the lockpick to open the door.");
-                   //currentRoom.setExit("staircase", centralStaircase);
-               }
-               else {
-                   System.out.println("This igtem cannot be used here.");
-               }
-           } else {
-               System.out.println("You can't use this item.");
-           }
-       }
-        else {
-            System.out.println("There is nothing to use!");
-       }
+            for (Item item : inventory) {
+                if (item.getItemDescription().toLowerCase().equals(itemToUse.toLowerCase())) {
+                    if (item.getItemDescription().toLowerCase().contains("lockpick")) {
+                        useLockpick(item);
+                        return;
+                    } else {
+                        System.out.println("You can't use that here.");
+                        return;
+                    }
+                } else {
+                    foundItem = true;
+                }
+
+                if (foundItem) {
+                    System.out.println("You have a " + itemToUse + ", but it cannot be used here");
+                } else {
+                    System.out.println("You don't have that item in your inventory.");
+                }
+            }
+        } else {
+            System.out.println("Use what?");
+        }
     }
 
-    /** 
+
+    private void useLockpick(Item item) {
+        Door door = currentRoom.getDoor();
+
+        if (door != null && door.isLocked()) {
+            door.unlock();
+            inventory.remove(item);
+            System.out.println("You used the lockpick to unlock the door.");
+        }
+        else {
+            System.out.println("There is no door here.");
+        }
+    }
+
+    /** he
      * "Quit" was entered. Check the rest of the command to see
      * whether we really quit the game.
      * @return true, if this command quits the game, false otherwise.

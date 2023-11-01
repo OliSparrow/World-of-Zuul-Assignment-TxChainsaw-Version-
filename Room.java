@@ -8,6 +8,7 @@ public class Room
     private String description;
     private HashMap<String, Room> exits;
     private ArrayList<Item> items;
+    private Door door;
 
     /**
      * Create a room described "description". Initially, it has
@@ -20,13 +21,21 @@ public class Room
         this.setDescription(description);
         exits = new HashMap<>();
         items = new ArrayList<>();
+        this.door = new Door();
+    }
+
+    public void addDoor(){
+        this.door = new Door();
+    }
+
+    public Door getDoor() {
+        return this.door;
     }
 
     /**
      * Define the exits of this room.  Every direction either leads
      * to another room or is null (no exit there).
      */
-
     public void setExit(String direction, Room neighbour)
     {
         exits.put(direction, neighbour);
@@ -60,20 +69,12 @@ public class Room
         return "You are " + description + ".\n" + getExitString();
     }
 
-    public void addItem(String itemDescription) {
-        items.add(new Item(itemDescription));
+
+    public void addItem(String itemDescription, String inventoryDescription) {
+        items.add(new Item(itemDescription, inventoryDescription));
     }
 
-    public boolean containsItem(String itemDescription) {
-        for (Item item : items) {
-            if (item.getItemDescription().equals(itemDescription)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public Item removeItem() {
+    public Item removeItem(Item item) {
         if (!items.isEmpty()) {
             return items.remove(items.size() - 1);
         }
@@ -84,6 +85,15 @@ public class Room
 
     public Room getRoom(String direction) {
         return exits.get(direction);
+    }
+
+    public Item getItem(String itemName) {
+        for (Item item : items) {
+            if (item.getItemDescription().equalsIgnoreCase(itemName)) {
+                return item;
+            }
+        }
+        return null;
     }
 
 }
