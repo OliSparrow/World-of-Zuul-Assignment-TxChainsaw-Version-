@@ -8,14 +8,12 @@ public class Room
     private String description;
     private HashMap<String, Room> exits;
     private ArrayList<Item> items;
+
+
+
     private Door door;
 
-    /**
-     * Create a room described "description". Initially, it has
-     * no exits. "description" is something like "a kitchen" or
-     * "an open court yard".
-     * @param description The room's description.
-     */
+
     public Room(String description)
     {
         this.setDescription(description);
@@ -24,12 +22,24 @@ public class Room
         this.door = new Door();
     }
 
-    public void addDoor(){
+    public Door getDoor() {
+        return this.door;
+    }
+
+    public void setDoor(){
         this.door = new Door();
     }
 
-    public Door getDoor() {
-        return this.door;
+    public void lockDoor() {
+        door.lock();
+    }
+
+    public void unlockDoor() {
+        this.door.unlock();
+    }
+
+    public boolean isDoorLocked() {
+        return door.isLocked();
     }
 
     /**
@@ -70,8 +80,8 @@ public class Room
     }
 
 
-    public void addItem(String itemDescription, String inventoryDescription) {
-        items.add(new Item(itemDescription, inventoryDescription));
+    public void addItem(String itemName, String itemDescription) {
+        items.add(new Item(itemName, itemDescription));
     }
 
     public Item removeItem(Item item) {
@@ -83,9 +93,6 @@ public class Room
         }
     }
 
-    public Room getRoom(String direction) {
-        return exits.get(direction);
-    }
 
     public Item getItem(String itemName) {
         for (Item item : items) {

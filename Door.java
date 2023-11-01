@@ -10,6 +10,10 @@ public class Door {
         return isLocked;
     }
 
+    public void lock() {
+        this.isLocked = true;
+    }
+
     public void unlock(){
         this.isLocked = false;
     }

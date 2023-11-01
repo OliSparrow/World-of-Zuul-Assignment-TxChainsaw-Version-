@@ -6,6 +6,8 @@ public class Game
     private Room currentRoom;
     private ArrayList<Item> inventory;
     private boolean lockpickUsed = false;
+    private Room centralStaircase;
+    private Room lairExit;
 
         
     /**
@@ -23,7 +25,7 @@ public class Game
      */
     private void createRooms()
     {
-        Room cellOne, cellTwo, basementHallway, lair, boneRoom, toolStorage, coldRoom, lairDoor, blueBox, centralHallway, centralStaircase, livingRoom, backPorch, bloodRoom, kitchen, diningRoom;
+        Room cellOne, cellTwo, basementHallway, lair, boneRoom, toolStorage, coldRoom, lairExit, blueBox, centralHallway, centralStaircase, livingRoom, backPorch, bloodRoom, kitchen, diningRoom;
 
         // create the rooms
         cellOne = new Room("a small dimly lit cell");
@@ -34,7 +36,7 @@ public class Game
         toolStorage = new Room("in something that looks like a tool storage. You spot a blue toolbox on a table");
         blueBox = new Room ("in front of the blue toolbox. There seems to be a single lockpick inside of it");
         coldRoom = new Room("in a cold room, like a freezer. Bodies are strung up from the ceiling, animal and human");
-        lairDoor = new Room("in front of a large blue door with a light shining on it. You try to open it, but it won't budge. You're going to need to find a way to pick the lock");
+        lairExit = new Room("in front of a large blue door with a light shining on it. You try to open it, but it won't budge. You're going to need to find a way to pick the lock");
         centralStaircase = new Room("in a narrow staircase. The red wall is lined with varying animal skulls");
         centralHallway = new Room("in a hallway with a locked door at the end of it. On either side, there are doors leading to other rooms of the house");
         livingRoom = new Room("in what seems like a living room, except there's chicken feathers everywhere and the furniture is adorned with human spines and skulls. At the end of a room is a large window, the sun high in the sky outside");
@@ -52,7 +54,7 @@ public class Game
 
         cellTwo.setExit("hallway", basementHallway);
 
-        lair.setExit("door", lairDoor);
+        lair.setExit("door", lairExit);
         lair.setExit("bone", boneRoom);
         lair.setExit("cold", coldRoom);
         lair.setExit("hallway", basementHallway);
@@ -69,7 +71,26 @@ public class Game
         coldRoom.setExit("lair", lair);
         coldRoom.setExit("storage", toolStorage);
 
-        lairDoor.setExit("lair", lair);
+        lairExit.setExit("lair", lair);
+
+        centralStaircase.setExit("hallway", centralHallway);
+
+        centralHallway.setExit("staircase", centralStaircase);
+        centralHallway.setExit("livingroom", livingRoom);
+        centralStaircase.setExit("diningroom", diningRoom);
+
+        livingRoom.setExit("backporch", backPorch);
+        livingRoom.setExit("hallway", centralHallway);
+
+        diningRoom.setExit("kitchen", kitchen);
+        diningRoom.setExit("hallway", centralHallway);
+
+        kitchen.setExit("bloodroom", bloodRoom);
+        kitchen.setExit("diningroom", diningRoom);
+
+        bloodRoom.setExit("diningroom", diningRoom);
+        bloodRoom.setExit("backporch", backPorch);
+
 
         currentRoom = cellOne;  // start game in cell 1
 
@@ -77,8 +98,10 @@ public class Game
         cellOne.addItem("lockpick", "A small but sturdy lockpick. Can be used on doors.");
         blueBox.addItem("lockpick", "A small but sturdy lockpick. Can be used on doors.");
 
+        Door lairDoor, hallwayDoor;
         //Add doors below
-        lairDoor.addDoor();
+        //lairDoor.setDoor();
+        //hallwayDoor.setDoor();
     }
 
 
@@ -175,7 +198,6 @@ public class Game
 
     private void printInventory() {
         System.out.println("You check your pockets.");
-        System.out.println("Your current inventory:");
 
         if (inventory.isEmpty()) {
             System.out.println("There's nothing in your pockets!");
@@ -186,6 +208,7 @@ public class Game
             }
         }
     }
+
 
     /** 
      * Try to go in one direction. If there is an exit, enter
@@ -219,12 +242,6 @@ public class Game
         }
     }
 
-    private void printLocationInfo() {
-        System.out.println("You are " + currentRoom.getDescription());
-        System.out.print(currentRoom.getExitString());
-        System.out.println();
-    }
-
     //Re-prints the room description.
     private void look(){
         System.out.println(currentRoom.getLongDescription());
@@ -256,7 +273,7 @@ public class Game
             boolean foundItem = false;
 
             for (Item item : inventory) {
-                if (item.getItemDescription().toLowerCase().equals(itemToUse.toLowerCase())) {
+                if (item.getItemDescription().toLowerCase().contains(itemToUse.toLowerCase())) {
                     if (item.getItemDescription().toLowerCase().contains("lockpick")) {
                         useLockpick(item);
                         return;
@@ -267,31 +284,41 @@ public class Game
                 } else {
                     foundItem = true;
                 }
+            }
 
-                if (foundItem) {
-                    System.out.println("You have a " + itemToUse + ", but it cannot be used here");
-                } else {
-                    System.out.println("You don't have that item in your inventory.");
-                }
+            if (foundItem) {
+                System.out.println("You have a " + itemToUse + ", but it cannot be used here");
+            } else {
+                System.out.println("You don't have that item in your inventory.");
             }
         } else {
             System.out.println("Use what?");
         }
     }
 
-
     private void useLockpick(Item item) {
         Door door = currentRoom.getDoor();
 
-        if (door != null && door.isLocked()) {
-            door.unlock();
-            inventory.remove(item);
-            System.out.println("You used the lockpick to unlock the door.");
-        }
-        else {
-            System.out.println("There is no door here.");
+        if (door != null && currentRoom.equals(lairExit)) {
+            if (door.isLocked()) {
+                door.unlock();
+                inventory.remove(item); // Remove the lockpick from the inventory after use
+                System.out.println("You used the lockpick to unlock the door.");
+                currentRoom = currentRoom.getExit("door"); // Move to the room behind the door
+                System.out.println(currentRoom.getLongDescription());
+                return;
+            } else {
+                System.out.println("The door is already unlocked.");
+                return;
+            }
+        } else if (door == null) {
+            System.out.println("There is no door to unlock in this room.");
+        } else {
+            System.out.println("You cannot use the lockpick here.");
         }
     }
+
+
 
     /** he
      * "Quit" was entered. Check the rest of the command to see
