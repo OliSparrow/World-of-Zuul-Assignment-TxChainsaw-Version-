@@ -56,22 +56,22 @@ public class Game
         // initialise room exits
         cellOne.setExit("hallway", basementHallway);
 
-        basementHallway.setExit("cell one", cellOne);
-        basementHallway.setExit("cell two", cellTwo);
+        basementHallway.setExit("cell1", cellOne);
+        basementHallway.setExit("cell2", cellTwo);
         basementHallway.setExit("lair", lair);
 
         cellTwo.setExit("hallway", basementHallway);
 
         lair.setExit("door", lairDoor);
-        lair.setExit("bone room", boneRoom);
-        lair.setExit("cold room", coldRoom);
+        lair.setExit("bone_room", boneRoom);
+        lair.setExit("cold_room", coldRoom);
         lair.setExit("hallway", basementHallway);
 
         boneRoom.setExit("storage", toolStorage);
         boneRoom.setExit("lair", lair);
 
-        toolStorage.setExit("bone room", boneRoom);
-        toolStorage.setExit("cold room", coldRoom);
+        toolStorage.setExit("bone_room", boneRoom);
+        toolStorage.setExit("cold_room", coldRoom);
 
         coldRoom.setExit("lair", lair);
         coldRoom.setExit("storage", toolStorage);
@@ -112,7 +112,7 @@ public class Game
         System.out.println();
         System.out.println("Type 'help' if you need help.");
         System.out.println();
-        printLocationInfo();
+        System.out.println(currentRoom.getLongDescription());
     }
 
     /**
@@ -156,7 +156,7 @@ public class Game
         System.out.println("around the dark and grim basement.");
         System.out.println();
         System.out.println("Your command words are:");
-        System.out.println("   go quit look help");
+        System.out.println("   go quit help");
     }
 
     /** 
@@ -181,7 +181,7 @@ public class Game
         }
         else {
             currentRoom = nextRoom;
-            printLocationInfo();
+            System.out.println(currentRoom.getLongDescription());
         }
     }
 
