@@ -1,25 +1,12 @@
-/**
- *  This class is the main class of the "World of Zuul" application. 
- *  "World of Zuul" is a very simple, text based adventure game.  Users 
- *  can walk around some scenery. That's all. It should really be extended 
- *  to make it more interesting!
- * 
- *  To play this game, create an instance of this class and call the "play"
- *  method.
- * 
- *  This main class creates and initialises all the others: it creates all
- *  rooms, creates the parser and starts the game.  It also evaluates and
- *  executes the commands that the parser returns.
- * 
- * @author  Michael Kölling and David J. Barnes
- * @version 2011.07.31
- */
+import java.util.ArrayList;
 
 public class Game 
 {
     private Parser parser;
     private Room currentRoom;
-    private Item currentInventory;
+    private ArrayList<Item> inventory;
+    private boolean lockpickUsed = false;
+
         
     /**
      * Create the game and initialise its internal map.
@@ -28,6 +15,7 @@ public class Game
     {
         createRooms();
         parser = new Parser();
+        inventory = new ArrayList<>();
     }
 
     /**
@@ -35,8 +23,8 @@ public class Game
      */
     private void createRooms()
     {
-        Room cellOne, cellTwo, basementHallway, lair, boneRoom, toolStorage, coldRoom, lairDoor, centralHallway, centralStaircase, livingRoom, backPorch, bloodRoom, kitchen, diningRoom;
-      
+        Room cellOne, cellTwo, basementHallway, lair, boneRoom, toolStorage, coldRoom, lairDoor, blueBox, centralHallway, centralStaircase, livingRoom, backPorch, bloodRoom, kitchen, diningRoom;
+
         // create the rooms
         cellOne = new Room("a small dimly lit cell");
         cellTwo = new Room("a small dimly lit cell, similar to the one you woke up in. There seems to be nothing here");
@@ -44,6 +32,7 @@ public class Game
         lair = new Room("in a large room with ominous red lighting. Bodies are strung from gallows, one looking fresher than the others. To the north of the room, you see a large blue door");
         boneRoom = new Room("in a medium sized room with bones hanging from the ceiling. You can see piles of bones laying around the edges of the room. You hope they aren't human");
         toolStorage = new Room("in something that looks like a tool storage. You spot a blue toolbox on a table");
+        blueBox = new Room ("in front of the blue toolbox. There seems to be a single lockpick inside of it");
         coldRoom = new Room("in a cold room, like a freezer. Bodies are strung up from the ceiling, animal and human");
         lairDoor = new Room("in front of a large blue door with a light shining on it. You try to open it, but it won't budge. You're going to need to find a way to pick the lock");
         centralStaircase = new Room("in a narrow staircase. The red wall is lined with varying animal skulls");
@@ -64,15 +53,18 @@ public class Game
         cellTwo.setExit("hallway", basementHallway);
 
         lair.setExit("door", lairDoor);
-        lair.setExit("bone_room", boneRoom);
-        lair.setExit("cold_room", coldRoom);
+        lair.setExit("bone", boneRoom);
+        lair.setExit("cold", coldRoom);
         lair.setExit("hallway", basementHallway);
 
         boneRoom.setExit("storage", toolStorage);
         boneRoom.setExit("lair", lair);
 
-        toolStorage.setExit("bone_room", boneRoom);
-        toolStorage.setExit("cold_room", coldRoom);
+        toolStorage.setExit("bone", boneRoom);
+        toolStorage.setExit("cold", coldRoom);
+        toolStorage.setExit("toolbox", blueBox);
+
+        blueBox.setExit("storage", toolStorage);
 
         coldRoom.setExit("lair", lair);
         coldRoom.setExit("storage", toolStorage);
@@ -80,17 +72,10 @@ public class Game
         lairDoor.setExit("lair", lair);
 
         currentRoom = cellOne;  // start game in cell 1
+
+        blueBox.addItem("A small lockpick. Can be used to open doors.");
     }
 
-    private void createItems() {
-        Item lockpick, boneScrap;
-        lockpick = new Item("A small lockpick. Can be used to open doors");
-        boneScrap = new Item("A small but sharp piece of chicken bone");
-
-        currentInventory = null; //start with nothing in inventory
-
-        //implement feature to actually obtain the items
-    }
 
     /**
      *  Main play routine.  Loops until end of play.
@@ -183,11 +168,15 @@ public class Game
 
     private void printInventory() {
         System.out.println("You check your pockets.");
-        System.out.println();
         System.out.println("Your current inventory:");
 
-        if (currentInventory == null) {
+        if (inventory.isEmpty()) {
             System.out.println("There's nothing in your pockets!");
+        }
+        else {
+            for (Item item : inventory) {
+                System.out.println("- " + item.getItemDescription());
+            }
         }
     }
 
@@ -212,8 +201,14 @@ public class Game
             System.out.println("There is no door!");
         }
         else {
-            currentRoom = nextRoom;
-            System.out.println(currentRoom.getLongDescription());
+            if (direction.equals("staircase") && !lockpickUsed) {
+                System.out.println("The door is locked. You need to find something to unlock it with.");
+            }
+            else {
+                currentRoom = nextRoom;
+                System.out.println(currentRoom.getLongDescription());
+            }
+
         }
     }
 
@@ -229,11 +224,39 @@ public class Game
     }
 
     private void getItem(){
-        System.out.println("There is nothing to get!");
+        Item item = currentRoom.removeItem();
+
+        if (item != null) {
+            inventory.add(item);
+            System.out.println("You picked up: " + item.getItemDescription());
+        }
+        else {
+            System.out.println("There is nothing to get!");
+        }
     }
 
     private void useItem(){
-        System.out.println("There is nothing to use!");
+       if (!inventory.isEmpty()) {
+           Item currentItem = inventory.get(inventory.size() - 1); // Get the last item in inventory
+           String itemDescription = currentItem.getItemDescription();
+
+           if (itemDescription.contains("lockpick")) {
+               Room lairDoorRoom = currentRoom.getRoom("lairDoor");
+               if (lairDoorRoom != null && !lockpickUsed) {
+                   lockpickUsed = true;
+                   System.out.println("You use the lockpick to open the door.");
+                   //currentRoom.setExit("staircase", centralStaircase);
+               }
+               else {
+                   System.out.println("This igtem cannot be used here.");
+               }
+           } else {
+               System.out.println("You can't use this item.");
+           }
+       }
+        else {
+            System.out.println("There is nothing to use!");
+       }
     }
 
     /** 
