@@ -153,37 +153,43 @@ public class Game
      * @param command The command to be processed.
      * @return true If the command ends the game, false otherwise.
      */
-    private boolean processCommand(Command command) 
-    {
+    private boolean processCommand(Command command) {
         boolean wantToQuit = false;
+        CommandWord commandWord = command.getCommandWordEnum();
 
-        if(command.isUnknown()) {
-            System.out.println("I don't know what you mean...");
-            return false;
-        }
-
-        String commandWord = command.getCommandWord();
-        if (commandWord.equals("help")) {
-            printHelp();
-        }
-        else if (commandWord.equals("go")) {
-            goRoom(command);
-        } else if (commandWord.equals("back")) {
-            goBack();
-        } else if(commandWord.equals("look")) {
-            look();
-        } else if (commandWord.equals("get")) {
-            takeItem(command);
-        } else if (commandWord.equals("use")) {
-            useItem(command);
-        } else if (commandWord.equals("inventory")) {
-            printInventory();
-        } else if (commandWord.equals("quit")) {
-            wantToQuit = quit(command);
+        switch (commandWord) {
+            case HELP:
+                printHelp();
+                break;
+            case GO:
+                goRoom(command);
+                break;
+            case BACK:
+                goBack();
+                break;
+            case LOOK:
+                look();
+                break;
+            case GET:
+                takeItem(command);
+                break;
+            case USE:
+                useItem(command);
+                break;
+            case INVENTORY:
+                printInventory();
+                break;
+            case QUIT:
+                wantToQuit = quit(command);
+                break;
+            default:
+                System.out.println("Command not recognized.");
+                break;
         }
 
         return wantToQuit;
     }
+
 
     // implementations of user commands:
 
@@ -197,7 +203,6 @@ public class Game
         System.out.println("You are lost. You are alone. You wander");
         System.out.println("around the dark and grim basement.");
         System.out.println();
-        System.out.println("Your command words are:");
         parser.showCommands();
 
     }
