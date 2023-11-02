@@ -94,7 +94,7 @@ public class Game
 
         currentRoom = cellOne;  // start game in cell 1
 
-        //Add items below
+        //Add items below - Currently itemDescription doesn't fully work, but is kept for future implementation.
         cellOne.addItem("lockpick", "A small but sturdy lockpick. Can be used on doors.");
         cellOne.addItem("bonescrap", "A sharp piece of chicken bone.");
 
@@ -252,7 +252,7 @@ public class Game
         } else {
             System.out.println("Items in room:");
             for (Item item : currentRoom.lookItems()) {
-                System.out.println("- " + item.getItemDescription());
+                System.out.println("- " + item.getItemName());
             }
         }
     }
@@ -284,8 +284,8 @@ public class Game
 
             for (Item item : inventory) {
                 //Check if desc of item contains text entered by player
-                if (item.getItemDescription().toLowerCase().contains(itemToUse.toLowerCase())) {
-                    if (item.getItemDescription().toLowerCase().contains("lockpick")) {
+                if (item.getItemName().toLowerCase().contains(itemToUse.toLowerCase())) {
+                    if (item.getItemName().toLowerCase().contains("lockpick")) {
                         useLockpick(item);
                         return;
                     } else {

@@ -4,7 +4,7 @@ public class Item {
     private String itemName;
     private boolean isInInventory;
 
-    public Item(String itemDescription, String itemName) {
+    public Item(String itemName, String itemDescription) {
         this.setDescription(itemDescription);
         this.itemName = itemName;
         this.isInInventory = false;
@@ -14,13 +14,12 @@ public class Item {
         this.itemDescription = itemDescription;
     }
 
-    public String getItemDescription() {
-        if (isInInventory) {
-            return itemName;
-        } else {
-            return itemDescription;
-        }
+    public String getItemName() {
+        return itemName;
+    }
 
+    public String getItemDescription() {
+            return itemDescription;
     }
 
     public void pickedUp() {
