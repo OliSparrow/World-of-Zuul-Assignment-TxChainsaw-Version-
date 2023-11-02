@@ -11,6 +11,7 @@ public class Game
     private Room centralStaircase;
     private Room lairExit;
     private Stack<Room> roomHistory;
+    private Player player;
 
         
     /**
@@ -23,6 +24,7 @@ public class Game
         inventory = new ArrayList<>();
         previousRoom = null;
         roomHistory = new Stack<>();
+        player = new Player(currentRoom);
     }
 
     /**
@@ -204,6 +206,7 @@ public class Game
         if (!roomHistory.isEmpty()) {
             currentRoom = roomHistory.pop(); //get last room from history
             System.out.println("You went back to the previous room.");
+            System.out.println();
             System.out.println(currentRoom.getLongDescription());
         } else {
             System.out.println("There is no previous room.");
@@ -213,15 +216,15 @@ public class Game
     private void printInventory() {
         System.out.println("You check your pockets.");
 
-        if (inventory.isEmpty()) {
+        if (player.getInventory().isEmpty()) {
             System.out.println("There's nothing in your pockets!");
-        }
-        else {
-            for (Item item : inventory) {
+        } else {
+            for (Item item : player.getInventory()) {
                 System.out.println("- " + item.getItemDescription());
             }
         }
     }
+
 
 
     /** 
@@ -229,28 +232,28 @@ public class Game
      * the new room, otherwise print an error message.
      */
     private void goRoom(Command command) {
-        roomHistory.push(currentRoom); //Store current room in history
-        previousRoom = currentRoom; //Store current room as previous room
+        roomHistory.push(player.getCurrentRoom()); // Store current room in history via Player class
 
-        if(!command.hasSecondWord()) {
+        if (!command.hasSecondWord()) {
             // if there is no second word, we don't know where to go...
             System.out.println("Go where?");
             return;
         }
 
         String direction = command.getSecondWord();
-        // Try to leave current room.
+        // Try to leave the current room.
         Room nextRoom = currentRoom.getExit(direction);
 
         if (nextRoom == null) {
             System.out.println("There is no door!");
-        }
-        else {
-            currentRoom = nextRoom;
-            System.out.println(currentRoom.getLongDescription());
-
+        } else {
+            player.setCurrentRoom(nextRoom); // Update the player's current room via Player class
+            currentRoom = nextRoom; // Update the Game's currentRoom to the nextRoom
+            System.out.println(currentRoom.getLongDescription()); // Print the description of the new room
         }
     }
+
+
 
     //Re-prints the room description, but also checks for items.
     private void look(){
@@ -260,12 +263,13 @@ public class Game
         if (currentRoom.lookItems().isEmpty()) {
             System.out.println("There are no items in this room.");
         } else {
-            System.out.println("Items in room:");
+            System.out.println("Items in the room:");
             for (Item item : currentRoom.lookItems()) {
                 System.out.println("- " + item.getItemName());
             }
         }
     }
+
 
     private void takeItem(Command command){
         if (!command.hasSecondWord()) {
@@ -277,12 +281,10 @@ public class Game
         Item item = currentRoom.getItem(itemName);
 
         if (item != null) {
-            inventory.add(item);
-            item.pickedUp();
+            player.addItemToInventory(item);
             currentRoom.removeItem(itemName);
             System.out.println("You picked up: " + itemName + "!");
-        }
-        else {
+        } else {
             System.out.println("There is no " + itemName + " to get!");
         }
     }
@@ -290,32 +292,29 @@ public class Game
     private void useItem(Command command) {
         if (command.hasSecondWord()) {
             String itemToUse = command.getSecondWord();
-            boolean foundItem = false;
+            boolean itemFound = false;
 
-            for (Item item : inventory) {
-                //Check if desc of item contains text entered by player
-                if (item.getItemName().toLowerCase().contains(itemToUse.toLowerCase())) {
-                    if (item.getItemName().toLowerCase().contains("lockpick")) {
+            for (Item item : player.getInventory()) {
+                if (item.getItemName().equalsIgnoreCase(itemToUse)) {
+                    itemFound = true;
+                    if (item.getItemName().equalsIgnoreCase("lockpick")) {
                         useLockpick(item);
                         return;
                     } else {
                         System.out.println("You can't use that here.");
                         return;
                     }
-                } else {
-                    foundItem = true;
                 }
             }
 
-            if (foundItem) {
-                System.out.println("You have a " + itemToUse + ", but it cannot be used here");
-            } else {
-                System.out.println("You don't have that item in your inventory.");
+            if (!itemFound) {
+                System.out.println("You don't have a " + itemToUse + " in your inventory.");
             }
         } else {
             System.out.println("Use what?");
         }
     }
+
 
 
     //Find a way to make this work in tandem with the createRooms method. Currently unable to unlock anything with it.us
@@ -329,8 +328,7 @@ public class Game
                     door.unlock();
                     inventory.remove(item); // Remove the lockpick from the inventory after use
                     System.out.println("You used the lockpick to unlock the lair door.");
-                    currentRoom = currentRoom.getExit("door"); // Move to the room behind the door
-                    currentRoom.setExit("staircase", centralStaircase); // Add new exit to the central staircase
+                    player.setCurrentRoom(player.getCurrentRoom().getExit("door"));
                     System.out.println(currentRoom.getLongDescription());
                     return;
                 } else {
