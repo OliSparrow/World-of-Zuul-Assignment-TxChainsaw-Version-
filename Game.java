@@ -96,6 +96,8 @@ public class Game
 
         //Add items below
         cellOne.addItem("lockpick", "A small but sturdy lockpick. Can be used on doors.");
+        cellOne.addItem("bonescrap", "A sharp piece of chicken bone.");
+
         blueBox.addItem("lockpick", "A small but sturdy lockpick. Can be used on doors.");
 
         //Add doors below
@@ -240,9 +242,19 @@ public class Game
         }
     }
 
-    //Re-prints the room description.
+    //Re-prints the room description, but also checks for items.
     private void look(){
         System.out.println(currentRoom.getLongDescription());
+        System.out.println();
+
+        if (currentRoom.lookItems().isEmpty()) {
+            System.out.println("There are no items in this room.");
+        } else {
+            System.out.println("Items in room:");
+            for (Item item : currentRoom.lookItems()) {
+                System.out.println("- " + item.getItemDescription());
+            }
+        }
     }
 
     private void takeItem(Command command){
@@ -257,7 +269,7 @@ public class Game
         if (item != null) {
             inventory.add(item);
             item.pickedUp();
-            currentRoom.removeItem(item);
+            currentRoom.removeItem(itemName);
             System.out.println("You picked up: " + itemName + "!");
         }
         else {
@@ -271,6 +283,7 @@ public class Game
             boolean foundItem = false;
 
             for (Item item : inventory) {
+                //Check if desc of item contains text entered by player
                 if (item.getItemDescription().toLowerCase().contains(itemToUse.toLowerCase())) {
                     if (item.getItemDescription().toLowerCase().contains("lockpick")) {
                         useLockpick(item);
@@ -321,7 +334,6 @@ public class Game
             System.out.println("You can't use the lockpick here.");
         }
     }
-
 
 
 

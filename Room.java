@@ -31,21 +31,6 @@ public class Room
         this.door.lock();
     }
 
-    public void setDoor(){
-        this.door = new Door();
-    }
-
-    public void lockDoor() {
-        door.lock();
-    }
-
-    public void unlockDoor() {
-        this.door.unlock();
-    }
-
-    public boolean isDoorLocked() {
-        return door.isLocked();
-    }
 
     /**
      * Define the exits of this room.  Every direction either leads
@@ -89,14 +74,22 @@ public class Room
         items.add(new Item(itemName, itemDescription));
     }
 
-    public Item removeItem(Item item) {
-        if (!items.isEmpty()) {
-            return items.remove(items.size() - 1);
+    public Item removeItem(String itemName) {
+        Item foundItem = null;
+        for (Item item : items) {
+            if (item.getItemDescription().equalsIgnoreCase(itemName)) {
+                foundItem = item;
+                break;
+            }
         }
-        else {
-            return null;
+
+        if (foundItem != null) {
+            items.remove(foundItem);
         }
+
+        return foundItem;
     }
+
 
 
     public Item getItem(String itemName) {
@@ -106,6 +99,11 @@ public class Room
             }
         }
         return null;
+    }
+
+
+    public ArrayList<Item> lookItems() {
+        return items;
     }
 
 

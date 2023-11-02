@@ -15,12 +15,12 @@ public class Item {
     }
 
     public String getItemDescription() {
-        return (isInInventory) ? itemName : itemDescription;
+        if (isInInventory) {
+            return itemName;
+        } else {
+            return itemDescription;
+        }
 
-    }
-
-    public String getItemName() {
-        return itemName;
     }
 
     public void pickedUp() {
