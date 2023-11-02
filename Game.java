@@ -1,13 +1,16 @@
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class Game
 {
     private Parser parser;
     private Room currentRoom;
+    private Room previousRoom;
     private ArrayList<Item> inventory;
     private boolean lockpickUsed = false;
     private Room centralStaircase;
     private Room lairExit;
+    private Stack<Room> roomHistory;
 
         
     /**
@@ -18,6 +21,8 @@ public class Game
         createRooms();
         parser = new Parser();
         inventory = new ArrayList<>();
+        previousRoom = null;
+        roomHistory = new Stack<>();
     }
 
     /**
@@ -161,18 +166,17 @@ public class Game
         }
         else if (commandWord.equals("go")) {
             goRoom(command);
-        }
-        else if(commandWord.equals("look")) {
+        } else if (commandWord.equals("back")) {
+            goBack();
+        } else if(commandWord.equals("look")) {
             look();
         } else if (commandWord.equals("get")) {
             takeItem(command);
-        }
-        else if (commandWord.equals("use")) {
+        } else if (commandWord.equals("use")) {
             useItem(command);
         } else if (commandWord.equals("inventory")) {
             printInventory();
-        }
-        else if (commandWord.equals("quit")) {
+        } else if (commandWord.equals("quit")) {
             wantToQuit = quit(command);
         }
 
@@ -196,6 +200,16 @@ public class Game
 
     }
 
+    private void goBack() {
+        if (!roomHistory.isEmpty()) {
+            currentRoom = roomHistory.pop(); //get last room from history
+            System.out.println("You went back to the previous room.");
+            System.out.println(currentRoom.getLongDescription());
+        } else {
+            System.out.println("There is no previous room.");
+        }
+    }
+
     private void printInventory() {
         System.out.println("You check your pockets.");
 
@@ -214,8 +228,10 @@ public class Game
      * Try to go in one direction. If there is an exit, enter
      * the new room, otherwise print an error message.
      */
-    private void goRoom(Command command) 
-    {
+    private void goRoom(Command command) {
+        roomHistory.push(currentRoom); //Store current room in history
+        previousRoom = currentRoom; //Store current room as previous room
+
         if(!command.hasSecondWord()) {
             // if there is no second word, we don't know where to go...
             System.out.println("Go where?");
@@ -223,7 +239,6 @@ public class Game
         }
 
         String direction = command.getSecondWord();
-
         // Try to leave current room.
         Room nextRoom = currentRoom.getExit(direction);
 
@@ -231,13 +246,8 @@ public class Game
             System.out.println("There is no door!");
         }
         else {
-            if (direction.equals("staircase") && !lockpickUsed) {
-                System.out.println("The door is locked. You need to find something to unlock it with.");
-            }
-            else {
-                currentRoom = nextRoom;
-                System.out.println(currentRoom.getLongDescription());
-            }
+            currentRoom = nextRoom;
+            System.out.println(currentRoom.getLongDescription());
 
         }
     }
