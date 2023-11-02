@@ -98,10 +98,8 @@ public class Game
         cellOne.addItem("lockpick", "A small but sturdy lockpick. Can be used on doors.");
         blueBox.addItem("lockpick", "A small but sturdy lockpick. Can be used on doors.");
 
-        Door lairDoor, hallwayDoor;
         //Add doors below
-        //lairDoor.setDoor();
-        //hallwayDoor.setDoor();
+        lairExit.addDoor();
     }
 
 
@@ -296,27 +294,35 @@ public class Game
         }
     }
 
+
+    //Find a way to make this work in tandem with the createRooms method. Currently unable to unlock anything with it.us
+
     private void useLockpick(Item item) {
         Door door = currentRoom.getDoor();
 
-        if (door != null && currentRoom.equals(lairExit)) {
-            if (door.isLocked()) {
-                door.unlock();
-                inventory.remove(item); // Remove the lockpick from the inventory after use
-                System.out.println("You used the lockpick to unlock the door.");
-                currentRoom = currentRoom.getExit("door"); // Move to the room behind the door
-                System.out.println(currentRoom.getLongDescription());
-                return;
+        if (currentRoom.equals(lairExit)) {
+            if (door != null) {
+                if (door.isLocked()) {
+                    door.unlock();
+                    inventory.remove(item); // Remove the lockpick from the inventory after use
+                    System.out.println("You used the lockpick to unlock the lair door.");
+                    currentRoom = currentRoom.getExit("door"); // Move to the room behind the door
+                    currentRoom.setExit("staircase", centralStaircase); // Add new exit to the central staircase
+                    System.out.println(currentRoom.getLongDescription());
+                    return;
+                } else {
+                    System.out.println("The lair door is already unlocked.");
+                    return;
+                }
             } else {
-                System.out.println("The door is already unlocked.");
-                return;
+                System.out.println("There is no door in this room.");
             }
-        } else if (door == null) {
-            System.out.println("There is no door to unlock in this room.");
         } else {
-            System.out.println("You cannot use the lockpick here.");
+            System.out.println("You can't use the lockpick here.");
         }
     }
+
+
 
 
 

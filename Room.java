@@ -26,6 +26,11 @@ public class Room
         return this.door;
     }
 
+    public void addDoor() {
+        this.door = new Door();
+        this.door.lock();
+    }
+
     public void setDoor(){
         this.door = new Door();
     }
@@ -102,5 +107,8 @@ public class Room
         }
         return null;
     }
+
+
+
 
 }
