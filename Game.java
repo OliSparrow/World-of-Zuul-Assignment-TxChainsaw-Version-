@@ -129,6 +129,7 @@ public class Game
             Command command = parser.getCommand();
             finished = processCommand(command);
         }
+        System.out.println();
         System.out.println("Thank you for playing.  Good bye.");
     }
 
@@ -200,6 +201,7 @@ public class Game
      */
     private void printHelp() 
     {
+        System.out.println();
         System.out.println("You are lost. You are alone. You wander");
         System.out.println("around the dark and grim basement.");
         System.out.println();
@@ -210,18 +212,22 @@ public class Game
     private void goBack() {
         if (!roomHistory.isEmpty()) {
             currentRoom = roomHistory.pop(); //get last room from history
+            System.out.println();
             System.out.println("You went back to the previous room.");
             System.out.println();
             System.out.println(currentRoom.getLongDescription());
         } else {
+            System.out.println();
             System.out.println("There is no previous room.");
         }
     }
 
     private void printInventory() {
+        System.out.println();
         System.out.println("You check your pockets.");
 
         if (player.getInventory().isEmpty()) {
+            System.out.println();
             System.out.println("There's nothing in your pockets!");
         } else {
             for (Item item : player.getInventory()) {
@@ -238,6 +244,7 @@ public class Game
      */
     private void goRoom(Command command) {
         roomHistory.push(player.getCurrentRoom()); // Store current room in history via Player class
+        System.out.println();
 
         if (!command.hasSecondWord()) {
             // if there is no second word, we don't know where to go...
@@ -250,7 +257,7 @@ public class Game
         Room nextRoom = currentRoom.getExit(direction);
 
         if (nextRoom == null) {
-            System.out.println("There is no door!");
+            System.out.println("That isn't a room!");
         } else {
             player.setCurrentRoom(nextRoom); // Update the player's current room via Player class
             currentRoom = nextRoom; // Update the Game's currentRoom to the nextRoom
@@ -262,6 +269,7 @@ public class Game
 
     //Re-prints the room description, but also checks for items.
     private void look(){
+        System.out.println();
         System.out.println(currentRoom.getLongDescription());
         System.out.println();
 
@@ -277,6 +285,7 @@ public class Game
 
 
     private void takeItem(Command command){
+        System.out.println();
         if (!command.hasSecondWord()) {
             System.out.println("Get what?");
             return;
@@ -295,6 +304,7 @@ public class Game
     }
 
     private void useItem(Command command) {
+        System.out.println();
         if (command.hasSecondWord()) {
             String itemToUse = command.getSecondWord();
             boolean itemFound = false;
@@ -306,7 +316,7 @@ public class Game
                         useLockpick(item);
                         return;
                     } else {
-                        System.out.println("You can't use that here.");
+                        System.out.println("You can't use the " + itemToUse + " here.");
                         return;
                     }
                 }
@@ -325,6 +335,7 @@ public class Game
     //Find a way to make this work in tandem with the createRooms method. Currently unable to unlock anything with it.us
 
     private void useLockpick(Item item) {
+        System.out.println();
         Door door = currentRoom.getDoor();
 
         if (currentRoom.equals(lairExit)) {
@@ -358,6 +369,7 @@ public class Game
      */
     private boolean quit(Command command) 
     {
+        System.out.println();
         if(command.hasSecondWord()) {
             System.out.println("Quit what?");
             return false;
